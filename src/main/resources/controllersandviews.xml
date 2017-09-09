@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	   default-lazy-init="true">
+
+<!--	<mvc:annotation-driven /> this is evil cause it registeres a defaulthandlermapping -->
+        <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager" />
+        <mvc:resources mapping="/resources/**" location="/resources/" />
+<!--	<context:annotation-config /> -->
+	<context:component-scan base-package="de.edu.notecollect" />
+
+<!--	<import resource="properties-driven.xml" /> -->
+    <aop:aspectj-autoproxy />
+<!--    <bean id="schedulerAdvice" class="de.freenet.sport.spring.aspects.LoggingAroundAdvice" /> -->
+
+<!--	<import resource="spring-persistence.xml" /> -->
+	<!-- maps the Controller name to the request uri stripping out 'Controller' -->
+<!--
+	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+		<property name="defaultHandler" ref="restletWrappingController" />
+	</bean>
+-->
+
+<!--
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="order" value="0" />
+	</bean>
+-->
+	<!-- acts similar like the ControllerclassNameHandlerMapping to get view names if none is supplied -->
+	<bean name="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+
+<!--
+	<bean id="etagInterceptor" class="de.freenet.sport.application.interceptor.EtagInterceptor" />
+	<bean id="cleanupInterceptoe" class="de.freenet.sport.application.interceptor.CleanupInterceptor" />
+-->
+<!--
+	<bean class="de.freenet.apps.mobile.spring.controller.SinglesController" autowire="byType">
+		<property name="maleCount" value="5"/>
+		<property name="femaleCount" value="5"/>
+	</bean>
+-->
+<!--
+	<bean class="de.freenet.apps.mobile.spring.controller.RankingController" autowire="byType">
+		<property name="fallbackController" ref="restletWrappingController"/>
+	</bean>
+
+	<bean class="de.freenet.apps.mobile.spring.controller.CalendarController" autowire="byType">
+		<property name="fallbackController" ref="restletWrappingController"/>
+	</bean>
+-->
+	<!-- we have the apache against us, i think this view sets the http status to 500 and apache
+		 honores this with the default 503 mimimi error -->
+	<bean id="exp" class="de.edu.notecollect.application.controller.ExceptionPresenter"/>
+
+	<!-- resolving views by inspecting the accept-header of a request and directs to an appropriate view -->
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="ignoreAcceptHeader" value="true" />
+        <property name="favorParameter" value="true" />
+        <property name="parameterName" value="view" />
+        <property name="favorPathExtension" value="true" />
+        <property name="defaultContentType" value="application/xml" />
+
+        <property name="mediaTypes">
+            <value>
+         	    json=application/json
+                xml=application/xml
+                html=text/html
+                mobile=text/xml
+<!--                bml=text/xml -->
+                banner=text/html
+            </value>
+        </property>
+    </bean>
+
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="contentNegotiationManager" ref="contentNegotiationManager" />
+		<!-- see mediaTypes -->
+		<property name="useNotAcceptableStatusCode" value="true"/>
+		<property name="defaultViews">
+			<list>
+<!--				<ref bean="jsonView"/> -->
+<!--				<ref bean="fallbackViewMobile" />
+				<ref bean="fallbackViewHTML" /> -->
+			</list>
+		</property>
+	</bean>
+
+	<!-- having a default view if json is requested -->
+	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+		<property name="disableCaching" value="false" />
+		<property name="renderedAttributes">
+			<set>
+				<value>pager</value>
+				<value>data</value>
+				<value>exception</value>
+				<!-- used for exception resolving if view=json -->
+			</set>
+		</property>
+	</bean>
+
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+<!--
+	<bean class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="contentType" value="application/xml" />
+		<property name="prefix" value="xml/"/>
+		<property name="suffix" value=".vm"/>
+		<property name="toolboxConfigLocation" value="/WEB-INF/toolbox.xml" />
+	</bean>
+
+	<bean class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="contentType" value="text/xml; charset=utf-8" />
+		<property name="prefix" value="bml/"/>
+		<property name="suffix" value=".vm"/>
+		<property name="toolboxConfigLocation" value="/WEB-INF/toolbox.xml" />
+	</bean>
+-->
+	<bean class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="contentType" value="text/html; charset=utf-8" />
+		<property name="prefix" value="html/"/>
+		<property name="suffix" value=".vm"/>
+		<property name="toolboxConfigLocation" value="/WEB-INF/toolbox.xml" />
+	</bean>
+
+    <bean class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+   		<property name="contentType" value="application/json; charset=utf-8" />
+   		<property name="prefix" value="json/"/>
+   		<property name="suffix" value=".vm"/>
+   		<property name="toolboxConfigLocation" value="/WEB-INF/toolbox.xml" />
+   	</bean>
+
+	<!-- based on urlbasedviewresolver (so we must specify explicitly which views can be handled)
+	     else the view resolver raises filenotfoundexception which we don't want to have -->
+	<bean class="org.springframework.web.servlet.view.xslt.XsltViewResolver">
+		<property name="contentType" value="text/html; charset=utf-8" />
+		<property name="prefix" value="/WEB-INF/templates/xsl/"/>
+		<property name="suffix" value=".xsl"/>
+		<property name="viewNames" value="heimspiel*"/>
+	</bean>
+
+	<!-- a configurator for the velocity engine -->
+	<bean class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="/WEB-INF/templates/" />
+        <property name="preferFileSystemAccess" value="true" />
+		<property name="velocityProperties">
+			<props>
+				<!-- specify the encoding of templates, template thinks that it is encoded the iso way,
+					 which is not true -->
+				<prop key="input.encoding">UTF-8</prop>
+				<prop key="output.encoding">UTF-8</prop>
+				<!-- hmm need more consulting something is wrong with the configuration of the log system -->
+<!--				<prop key="runtime.log.logsystem.class">org.apache.velocity.runtime.log.Log4JLogChute</prop>
+				<prop key="runtime.log.invalid.references">true</prop>
+				<prop key="runtime.log.logsystem.log4j.category">org.apache.Velocity</prop>
+				<prop key="log4j.logger.org.apache.velocity.runtime.log.SimpleLog4JLogSystem">INFO</prop> -->
+				<!-- lets call the default loop counter i -->
+<!--				<prop key="directive.foreach.counter.name">i</prop>  -->
+				<!-- start counting with 0 --><!-- $foreach.index in future versaions of velocity -->
+<!--				<prop key="directive.foreach.counter.initial.value">0</prop> -->
+                <prop key="velocimacro.library">json/macros.vm</prop>
+			</props>
+		</property>
+	</bean>
+<!-- you are encouraged to use the hibernate validatir instead of this very old and deprecated spring validator -->
+<!--
+	<bean id="configurationLoader" class="org.springmodules.validation.bean.conf.loader.annotation.AnnotationBeanValidationConfigurationLoader" />
+	<bean id="validator" class="org.springmodules.validation.bean.BeanValidator">
+		<property name="configurationLoader" ref="configurationLoader" />
+	</bean>
+-->
+</beans>

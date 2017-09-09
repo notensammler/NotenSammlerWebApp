@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.edu.notecollect</groupId>
+    <artifactId>notecollector</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <build>
+        <directory>${basedir}/target</directory>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes><include>**/*.java</include></includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes><include>**/*.*</include></includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/main/webapp/WEB-INF</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+        </testResources>
+        <plugins>
+
+            <!-- TODO: you should consider to use the release plugin more here:
+                 http://maven.apache.org/plugins/maven-release-plugin/ -->
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <!-- default build dir -->
+                            <directory>target</directory>
+                        </fileset>
+                        <fileset>
+                            <!-- delete local kaha db instance -->
+                            <directory>activemq-data</directory>
+                        </fileset>
+                        <fileset>
+                            <!-- delete local heimspiel db instance -->
+                            <directory>heim_data</directory>
+                        </fileset>
+                        <fileset>
+                            <!-- delete local job (quartz) db instance -->
+                            <directory>heim_jobs</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                    <debug>true</debug>
+                </configuration>
+            </plugin><!--
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>test-compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin> -->
+            <!--
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.1</version>
+            <executions>
+              <execution>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <tasks>
+                    <touch file="${basedir}/target/weaving.log" /> -->
+            <!--                  <property name="compile_classpath" refid="maven.compile.classpath"/>
+                              <echo message="compile classpath: ${compile_classpath}"/>-->
+            <!--                <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
+                                <classpath refid="maven.compile.classpath" />
+                            </taskdef>
+                            <weave source="${basedir}/src/main/java/de/freenet/persistence/entities/heimspiel/"
+                                   target="${basedir}/target/classes/de/freenet/persistence/entities/heimspiel/"
+                                   persistencexml="${basedir}/src/main/resources/META-INF/persistence_hs.xml"
+                                   log="${basedir}/target/log/weaving.log"
+                                   loglevel="FINE">
+                               <classpath refid="maven.compile.classpath" />
+                            </weave>
+                          </tasks>
+                        </configuration>
+                        <goals>
+                          <goal>run</goal>
+                        </goals>
+                      </execution>
+                    </executions>
+                  </plugin> -->
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <warName>sportMobile</warName>
+                    <archiveClasses>false</archiveClasses>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.0.4.v20111024</version>
+                <configuration>
+                    <!--
+                              <webAppConfig>
+                                <contextPath>/sportMobile</contextPath>
+                                <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+                                <jettyEnvXml>${basedir}/src/test/resources/jetty-env.xml</jettyEnvXml>
+                              </webAppConfig>
+                    -->
+                    <detail>true</detail>
+                    <webApp>
+                        <contextPath>/sportMobile</contextPath>
+                        <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+                        <jettyEnvXml>${basedir}/src/test/resources/jetty-env.xml</jettyEnvXml>
+                        <!--            <jettyEnvXml>src/test/resources/jetty-env.xml</jettyEnvXml> -->
+                        <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
+                    </webApp>
+
+                    <!--			<overrideWebXml>src/main/resources/override-web.xml</overrideWebXml>  -->
+                    <useProvidedScope>false</useProvidedScope>
+                    <!--			<useTestScope>true</useTestScope> -->
+                    <stopPort>9966</stopPort>
+                    <stopKey>foo</stopKey>
+                    <war>${project.build.directory}/sportMobile.war</war>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- depends on log4j and pulls it in -->
+        <!-- we need the logging implementation only at runtime -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+            <version>2.0</version>
+            <!-- curiously has a dependency on struts which we don't want here -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts-taglib</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts-tiles</artifactId>
+                </exclusion>
+            </exclusions>
+
+        </dependency>
+
+        <!-- has a dependency on spring beans -->
+        <!-- has a dependency to spring-web -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <!--
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aspects</artifactId>
+          <version>${spring.version}</version>
+          <classifier>sources</classifier>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- orm -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.4.2.RELEASE</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <spring.version>3.2.0</spring.version>
+        <slf4j.version>1.6.1</slf4j.version>
+    </properties>
+</project>

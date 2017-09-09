@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false">
+
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd MMM HH:mm:ss.SSS} [%p] [%t] [%c{3}] - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="Threshold" value="TRACE"/>
+        <param name="File" value="${catalina.base}/logs/sportservice.log"/>
+        <param name="Append" value="true"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd MMM HH:mm:ss.SSS} [%p] [%t] [%c{3}] - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="ext_comm" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="Threshold" value="TRACE"/>
+        <param name="File" value="${catalina.base}/logs/push_comm.log"/>
+        <param name="Append" value="true"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd MMM HH:mm:ss.SSS} [%p] [%t] [%c{3}] - %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="org.springframework.jndi" additivity="false">
+        <priority value="all" />
+        <appender-ref ref="file" />
+    </category>
+
+    <category name="org.springframework.web.servlet" additivity="false">
+        <priority value="info"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.springframework.web.servlet.DispatcherServlet" additivity="false">
+        <priority value="off" />
+        <appender-ref ref="file" />
+    </category>
+
+    <category name="org.springframework.orm.jpa" additivity="false">
+        <priority value="info"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.springframework.web.context.support" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.springframework.beans.factory.support" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.springframework.scheduling" additivity="false">
+        <priority value="info"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.quartz" additivity="false">
+        <priority value="info"/>
+        <appender-ref ref="file"/>
+    </category>
+
+
+
+    <!-- no logging ? -->
+    <category name="org.restlet" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="com.noelios" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.apache.commons.httpclient" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.hibernate" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="de.freenet" additivity="false">
+        <priority value="info" />
+        <appender-ref ref="file" />
+    </category>
+
+    <!-- notifications go into annother log file for better lookig when a problem occurs -->
+    <category name="de.freenet.sport.importer.jobs.NotificationSender" additivity="false">
+        <priority value="info" />
+        <appender-ref ref="ext_comm" />
+    </category>
+
+    <category name="de.freenet.sport.importer.jobs.NotificationHelper" additivity="false">
+        <priority value="info" />
+        <appender-ref ref="ext_comm" />
+    </category>
+
+    <category name="de.freenet.sport.importer.helper.listeners" additivity="false">
+        <priority value="info" />
+        <appender-ref ref="ext_comm" />
+    </category>
+
+
+    <category name="org.springframework.cache" additivity="false">
+        <priority value="off" />
+        <appender-ref ref="file" />
+    </category>
+
+    <category name="net.sf.ehcache" additivity="false">
+        <priority value="warn" />
+        <appender-ref ref="file" />
+    </category>
+
+    <category name="org.hibernate.cache" additivity="false">
+        <priority value="off" />
+        <appender-ref ref="file"/>
+    </category>
+<!--
+    <category name="org.hibernate.SQL" additivity="false">
+        <priority value="trace" />
+        <appender-ref ref="file" />
+    </category>
+    <category name="org.hibernate.type" additivity="false">
+    	<priority value="trace" />
+    	<appender-ref ref="file" />
+    </category>
+
+    <category name="org.springframework.data" additivity="false">
+        <priority value="trace" />
+        <appender-ref ref="file" />
+    </category>
+-->
+    <category name="org.apache.velocity" additivity="false">
+        <priority value="off"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <category name="org.springframework.ui.velocity" additivity="false">
+        <priority value="off" />
+        <appender-ref ref="file" />
+    </category>
+
+    <category name="com.noelios.restlet.util.FormReader" additivity="false">
+        <priority value="off"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </category>
+
+    <root>
+        <priority value="info"/>
+        <appender-ref ref="file"/>
+    </root>
+
+</log4j:configuration>
